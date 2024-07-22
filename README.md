@@ -91,9 +91,11 @@ Not selecting any filters:
 
 ## Future improvements / requests / help
 
--Selecting years should be done by slider
+    -Selecting years should be done by slider
 
--Filters should update available selection dynamically
+    -Filters should update available selection dynamically
+
+    -add odometer as a filter
 
 ## Data
 
