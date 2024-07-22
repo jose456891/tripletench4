@@ -78,13 +78,13 @@ tripletench4/
 
 ## Conclusions
 
-Without using any filers I've obtained 3 different conclusions on the data from this organizaion: (Max data year is 2018) 
+Without using any filers I've obtained 3 different conclusions on the data from this organizaion: 
 
 Not selecting any filters:
 
-1.  Average car prices form a dovetail , using scatterplot and selecting the "Average Vehicle Price". Please see screenshot. It looks like a dovetail, with the lowest average car prioces belogning to vehicle years of the 2000s.
+1.  Average car prices form a dovetail , using scatterplot and selecting the "Average Vehicle Price". Please see screenshot. It looks like a dovetail, with the lowest average car prices are from the 2000s.
 
-2.  Capitalization by vehicle year. It looks like a b ell curve, please see the screenshot by the same name. Assuming the last data yeart is 2018, 201y cars mnake the majority of the cars for sale in this platform.
+2.  Capitalization by vehicle year. It looks like a bell curve, please see the screenshot by the same name. Assuming the last data year is 2019, 2016 cars mnake the majority of the cars for sale in this platform.
 
 3.  Market Capitalization by Model. Look for screenshot of same name. The F150 is the most populat vehicle by capitalizaiton.
 
