@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import plotly.express as px
 
 def dataprep(df):
@@ -26,20 +27,20 @@ def dataprep(df):
 
     # Fill missing odometer values
     # Calculate the mean odometer value for each condition
-    condition_odometer = df.groupby('condition')['odometer'].mean()
+    condition_odometer_mean = df.groupby('condition')['odometer'].mean()
     df['odometer'] = df.apply(
-        lambda row: condition_odometer[row['condition']] if pd.isna(row['odometer']) else row['odometer'], axis=1
+        lambda row: condition_odometer_mean[row['condition']] if pd.isna(row['odometer']) else row['odometer'], axis=1
     )
 
     # Fill missing paint_color values
     # Calculate the most common value for each model
-    model_paint_color = df.groupby('model')['paint_color'].agg(lambda x: x.mode().iloc[0] if not x.mode().empty else np.nan)
+    model_paint_color_mode = df.groupby('model')['paint_color'].agg(lambda x: x.mode().iloc[0] if not x.mode().empty else np.nan)
     df['paint_color'] = df.apply(
-        lambda row: model_paint_color[row['model']] if pd.isna(row['paint_color']) else row['paint_color'], axis=1
+        lambda row: model_paint_color_mode[row['model']] if pd.isna(row['paint_color']) else row['paint_color'], axis=1
     )
     # Fill any remaining NaN values with the overall most common paint color
-    most_common_paint_color = df['paint_color'].mode().iloc[0]
-    df['paint_color'] = df['paint_color'].fillna(most_common_paint_color)
+    overall_most_common_paint_color = df['paint_color'].mode().iloc[0]
+    df['paint_color'] = df['paint_color'].fillna(overall_most_common_paint_color)
 
     # Fill missing is_4wd values with 0.0
     df['is_4wd'] = df['is_4wd'].fillna(0.0)
@@ -53,14 +54,14 @@ def dataprep(df):
 
     return df
 
-def plot_histogram_price_filtered(df, model_year=None, cylinders=None, condition=None, fuel=None, transmission=None, 
-                                  car_type=None, paint_color=None, is_4wd=None, models=None, aggregation='Average Vehicle Price'):
+def plot_histogram_price_filtered(df, model_year, cylinders=None, condition=None, fuel=None, transmission=None, 
+                                  car_type=None, paint_color=None, is_4wd=None, models=None, odometer=None, aggregation='Average Price'):
     """
     Plots a histogram of car prices by model with optional filters.
 
     Parameters:
     df (pd.DataFrame): The input DataFrame.
-    model_year (list or int, optional): The specific model year(s) to filter and plot. Defaults to None.
+    model_year (str or tuple): The model year range (tuple) or specific years (str).
     cylinders (list or int, optional): The number of cylinders to filter and plot. Defaults to None.
     condition (list or str, optional): The condition of the car to filter and plot. Defaults to None.
     fuel (list or str, optional): The type of fuel to filter and plot. Defaults to None.
@@ -69,6 +70,7 @@ def plot_histogram_price_filtered(df, model_year=None, cylinders=None, condition
     paint_color (list or str, optional): The paint color of the car to filter and plot. Defaults to None.
     is_4wd (list or bool, optional): Whether the car is 4WD to filter and plot. Defaults to None.
     models (list of str, optional): List of substrings to filter models. Defaults to None.
+    odometer (list of str, optional): The odometer range to filter and plot. Defaults to None.
     aggregation (str, optional): The aggregation method for price ('Average Price' or 'Market Capitalization'). Defaults to 'Average Price'.
     """
     # Apply filters
@@ -81,7 +83,8 @@ def plot_histogram_price_filtered(df, model_year=None, cylinders=None, condition
         'car_type': car_type,
         'paint_color': paint_color,
         'is_4wd': is_4wd,
-        'models': models
+        'models': models,
+        'odometer': odometer
     }
 
     # Treat empty lists as None
@@ -89,54 +92,46 @@ def plot_histogram_price_filtered(df, model_year=None, cylinders=None, condition
         if isinstance(value, list) and len(value) == 0:
             filters_applied[key] = None
 
+    # Apply model_year filter
     if filters_applied['model_year'] is not None:
-        if isinstance(filters_applied['model_year'], list):
-            df = df[df['model_year'].isin(filters_applied['model_year'])]
+        if isinstance(filters_applied['model_year'], tuple):
+            df = df[df['model_year'].between(filters_applied['model_year'][0], filters_applied['model_year'][1])]
         else:
-            df = df[df['model_year'] == filters_applied['model_year']]
+            years = [int(year) for year in filters_applied['model_year'].split(',')]
+            df = df[df['model_year'].isin(years)]
+
+    # Apply remaining filters
     if filters_applied['cylinders'] is not None:
-        if isinstance(filters_applied['cylinders'], list):
-            df = df[df['cylinders'].isin(filters_applied['cylinders'])]
-        else:
-            df = df[df['cylinders'] == filters_applied['cylinders']]
+        df = df[df['cylinders'].isin(filters_applied['cylinders'])]
     if filters_applied['condition'] is not None:
-        if isinstance(filters_applied['condition'], list):
-            df = df[df['condition'].isin(filters_applied['condition'])]
-        else:
-            df = df[df['condition'] == filters_applied['condition']]
+        df = df[df['condition'].isin(filters_applied['condition'])]
     if filters_applied['fuel'] is not None:
-        if isinstance(filters_applied['fuel'], list):
-            df = df[df['fuel'].isin(filters_applied['fuel'])]
-        else:
-            df = df[df['fuel'] == filters_applied['fuel']]
+        df = df[df['fuel'].isin(filters_applied['fuel'])]
     if filters_applied['transmission'] is not None:
-        if isinstance(filters_applied['transmission'], list):
-            df = df[df['transmission'].isin(filters_applied['transmission'])]
-        else:
-            df = df[df['transmission'] == filters_applied['transmission']]
+        df = df[df['transmission'].isin(filters_applied['transmission'])]
     if filters_applied['car_type'] is not None:
-        if isinstance(filters_applied['car_type'], list):
-            df = df[df['type'].isin(filters_applied['car_type'])]
-        else:
-            df = df[df['type'] == filters_applied['car_type']]
+        df = df[df['type'].isin(filters_applied['car_type'])]
     if filters_applied['paint_color'] is not None:
-        if isinstance(filters_applied['paint_color'], list):
-            df = df[df['paint_color'].isin(filters_applied['paint_color'])]
-        else:
-            df = df[df['paint_color'] == filters_applied['paint_color']]
+        df = df[df['paint_color'].isin(filters_applied['paint_color'])]
     if filters_applied['is_4wd'] is not None:
-        if isinstance(filters_applied['is_4wd'], list):
-            df = df[df['is_4wd'].isin(filters_applied['is_4wd'])]
-        else:
-            df = df[df['is_4wd'] == filters_applied['is_4wd']]
+        df = df[df['is_4wd'].isin(filters_applied['is_4wd'])]
     if filters_applied['models'] is not None:
         model_pattern = '|'.join(filters_applied['models'])
         df = df[df['model'].str.contains(model_pattern, case=False, na=False)]
-    
+    if filters_applied['odometer'] is not None:
+        odometer_bins = {
+            "<50K": (0, 50000),
+            "50K-100K": (50000, 100000),
+            "100K-150K": (100000, 150000),
+            "150K-200K": (150000, 200000),
+            "200K+": (200000, float('inf'))
+        }
+        df = pd.concat([df[(df['odometer'] >= odometer_bins[bin][0]) & (df['odometer'] < odometer_bins[bin][1])] for bin in filters_applied['odometer']])
+
     # Set the aggregation function for price
-    if aggregation == 'Average Vehicle Price':
+    if aggregation == 'Average Price':
         df_grouped = df.groupby('model')['price'].mean().reset_index()
-        y_title = 'Average Vehicle Price'
+        y_title = 'Average Price'
     else:
         df_grouped = df.groupby('model')['price'].sum().reset_index()
         y_title = 'Market Capitalization'
@@ -149,14 +144,14 @@ def plot_histogram_price_filtered(df, model_year=None, cylinders=None, condition
 
     return fig, len(df)
 
-def plot_scatterplot_price_year(df, model_year=None, cylinders=None, condition=None, fuel=None, transmission=None, 
-                                car_type=None, paint_color=None, is_4wd=None, models=None, aggregation="Average Vehicle Price"):
+def plot_scatterplot_price_year(df, model_year, cylinders=None, condition=None, fuel=None, transmission=None, 
+                                car_type=None, paint_color=None, is_4wd=None, models=None, odometer=None, aggregation='Average Price'):
     """
     Plots a scatterplot of car prices over the years with optional filters.
 
     Parameters:
     df (pd.DataFrame): The input DataFrame.
-    model_year (list or int, optional): The specific model year(s) to filter and plot. Defaults to None.
+    model_year (str or tuple): The model year range (tuple) or specific years (str).
     cylinders (list or int, optional): The number of cylinders to filter and plot. Defaults to None.
     condition (list or str, optional): The condition of the car to filter and plot. Defaults to None.
     fuel (list or str, optional): The type of fuel to filter and plot. Defaults to None.
@@ -165,6 +160,7 @@ def plot_scatterplot_price_year(df, model_year=None, cylinders=None, condition=N
     paint_color (list or str, optional): The paint color of the car to filter and plot. Defaults to None.
     is_4wd (list or bool, optional): Whether the car is 4WD to filter and plot. Defaults to None.
     models (list of str, optional): List of substrings to filter models. Defaults to None.
+    odometer (list of str, optional): The odometer range to filter and plot. Defaults to None.
     aggregation (str, optional): The aggregation method for price ('Average Price' or 'Market Capitalization'). Defaults to 'Average Price'.
     """
     # Apply filters
@@ -177,7 +173,8 @@ def plot_scatterplot_price_year(df, model_year=None, cylinders=None, condition=N
         'car_type': car_type,
         'paint_color': paint_color,
         'is_4wd': is_4wd,
-        'models': models
+        'models': models,
+        'odometer': odometer
     }
 
     # Treat empty lists as None
@@ -185,54 +182,46 @@ def plot_scatterplot_price_year(df, model_year=None, cylinders=None, condition=N
         if isinstance(value, list) and len(value) == 0:
             filters_applied[key] = None
 
+    # Apply model_year filter
     if filters_applied['model_year'] is not None:
-        if isinstance(filters_applied['model_year'], list):
-            df = df[df['model_year'].isin(filters_applied['model_year'])]
+        if isinstance(filters_applied['model_year'], tuple):
+            df = df[df['model_year'].between(filters_applied['model_year'][0], filters_applied['model_year'][1])]
         else:
-            df = df[df['model_year'] == filters_applied['model_year']]
+            years = [int(year) for year in filters_applied['model_year'].split(',')]
+            df = df[df['model_year'].isin(years)]
+
+    # Apply remaining filters
     if filters_applied['cylinders'] is not None:
-        if isinstance(filters_applied['cylinders'], list):
-            df = df[df['cylinders'].isin(filters_applied['cylinders'])]
-        else:
-            df = df[df['cylinders'] == filters_applied['cylinders']]
+        df = df[df['cylinders'].isin(filters_applied['cylinders'])]
     if filters_applied['condition'] is not None:
-        if isinstance(filters_applied['condition'], list):
-            df = df[df['condition'].isin(filters_applied['condition'])]
-        else:
-            df = df[df['condition'] == filters_applied['condition']]
+        df = df[df['condition'].isin(filters_applied['condition'])]
     if filters_applied['fuel'] is not None:
-        if isinstance(filters_applied['fuel'], list):
-            df = df[df['fuel'].isin(filters_applied['fuel'])]
-        else:
-            df = df[df['fuel'] == filters_applied['fuel']]
+        df = df[df['fuel'].isin(filters_applied['fuel'])]
     if filters_applied['transmission'] is not None:
-        if isinstance(filters_applied['transmission'], list):
-            df = df[df['transmission'].isin(filters_applied['transmission'])]
-        else:
-            df = df[df['transmission'] == filters_applied['transmission']]
+        df = df[df['transmission'].isin(filters_applied['transmission'])]
     if filters_applied['car_type'] is not None:
-        if isinstance(filters_applied['car_type'], list):
-            df = df[df['type'].isin(filters_applied['car_type'])]
-        else:
-            df = df[df['type'] == filters_applied['car_type']]
+        df = df[df['type'].isin(filters_applied['car_type'])]
     if filters_applied['paint_color'] is not None:
-        if isinstance(filters_applied['paint_color'], list):
-            df = df[df['paint_color'].isin(filters_applied['paint_color'])]
-        else:
-            df = df[df['paint_color'] == filters_applied['paint_color']]
+        df = df[df['paint_color'].isin(filters_applied['paint_color'])]
     if filters_applied['is_4wd'] is not None:
-        if isinstance(filters_applied['is_4wd'], list):
-            df = df[df['is_4wd'].isin(filters_applied['is_4wd'])]
-        else:
-            df = df[df['is_4wd'] == filters_applied['is_4wd']]
+        df = df[df['is_4wd'].isin(filters_applied['is_4wd'])]
     if filters_applied['models'] is not None:
         model_pattern = '|'.join(filters_applied['models'])
         df = df[df['model'].str.contains(model_pattern, case=False, na=False)]
-    
+    if filters_applied['odometer'] is not None:
+        odometer_bins = {
+            "<50K": (0, 50000),
+            "50K-100K": (50000, 100000),
+            "100K-150K": (100000, 150000),
+            "150K-200K": (150000, 200000),
+            "200K+": (200000, float('inf'))
+        }
+        df = pd.concat([df[(df['odometer'] >= odometer_bins[bin][0]) & (df['odometer'] < odometer_bins[bin][1])] for bin in filters_applied['odometer']])
+
     # Set the aggregation function for price
-    if aggregation == "Average Vehicle Price":
+    if aggregation == 'Average Price':
         df_grouped = df.groupby('model_year')['price'].mean().reset_index()
-        y_title = 'Average Vehicle Price'
+        y_title = 'Average Price'
     else:
         df_grouped = df.groupby('model_year')['price'].sum().reset_index()
         y_title = 'Market Capitalization'
@@ -247,8 +236,14 @@ def plot_scatterplot_price_year(df, model_year=None, cylinders=None, condition=N
     return fig, len(df)
 
 def update_filter_options(df, selected_filters):
+    # Apply model_year filter
     if selected_filters['model_year']:
-        df = df[df['model_year'].isin(selected_filters['model_year'])]
+        if isinstance(selected_filters['model_year'], tuple):
+            df = df[df['model_year'].between(selected_filters['model_year'][0], selected_filters['model_year'][1])]
+        else:
+            years = [int(year) for year in selected_filters['model_year'].split(',')]
+            df = df[df['model_year'].isin(years)]
+    # Apply remaining filters
     if selected_filters['cylinders']:
         df = df[df['cylinders'].isin(selected_filters['cylinders'])]
     if selected_filters['condition']:
@@ -266,4 +261,13 @@ def update_filter_options(df, selected_filters):
     if selected_filters['models']:
         model_pattern = '|'.join(selected_filters['models'])
         df = df[df['model'].str.contains(model_pattern, case=False, na=False)]
+    if selected_filters['odometer']:
+        odometer_bins = {
+            "<50K": (0, 50000),
+            "50K-100K": (50000, 100000),
+            "100K-150K": (100000, 150000),
+            "150K-200K": (150000, 200000),
+            "200K+": (200000, float('inf'))
+        }
+        df = pd.concat([df[(df['odometer'] >= odometer_bins[bin][0]) & (df['odometer'] < odometer_bins[bin][1])] for bin in selected_filters['odometer']])
     return df
