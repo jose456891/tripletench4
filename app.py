@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from functions import plot_histogram_price_filtered, update_filter_options, dataprep, plot_scatterplot_price_year
+from functions import plot_histogram_price_filtered, plot_scatterplot_price_year, update_filter_options, dataprep
 
 # Load Data
 df_dirty = pd.read_csv('vehicles_us.csv')
@@ -11,7 +11,7 @@ df = dataprep(df_dirty)
 # Print df to terminal
 df.info()
 
-st.title("Car Price Analysis")
+st.title("Car Price Analysis with Filters")
 
 # Sidebar menu for navigation
 from streamlit_option_menu import option_menu
@@ -35,12 +35,12 @@ selected_filters = {
     'is_4wd': st.sidebar.multiselect("Is 4WD", [True, False]),
     'models': st.sidebar.multiselect("Models", get_unique_options(df, 'model'))
 }
-aggregation = st.sidebar.radio("Aggregation Method", ['Average', 'Market Share'])
+aggregation = st.sidebar.radio("Aggregation Method", ['mean', 'sum'])
 
+filtered_df = update_filter_options(df, selected_filters)
 
 # Apply button
 if st.sidebar.button("Apply"):
-    filtered_df = update_filter_options(df, selected_filters)
     if selected == "Histogram":
         fig, count = plot_histogram_price_filtered(filtered_df, model_year=selected_filters['model_year'], 
                                                    cylinders=selected_filters['cylinders'], condition=selected_filters['condition'], 
@@ -54,8 +54,7 @@ if st.sidebar.button("Apply"):
                                                  cylinders=selected_filters['cylinders'], condition=selected_filters['condition'], 
                                                  fuel=selected_filters['fuel'], transmission=selected_filters['transmission'], 
                                                  car_type=selected_filters['car_type'], paint_color=selected_filters['paint_color'], 
-                                                 is_4wd=selected_filters['is_4wd'], models=selected_filters['models'])
+                                                 is_4wd=selected_filters['is_4wd'], models=selected_filters['models'], aggregation=aggregation)
         st.sidebar.write(f"Number of cars matching filters: {count}")
         st.plotly_chart(fig)
-
 
