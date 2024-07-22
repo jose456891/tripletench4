@@ -89,6 +89,11 @@ Not selecting any filters:
 3.  Market Capitalization by Model. Look for screenshot of same name. The F150 is the most populat vehicle by capitalizaiton.
 
 
+## Future improvements / requests / help
+
+-Selecting years should be done by slider
+-Filters should update available selection dynamically
+
 ## Data
 
 The dataset (`vehicles_us.csv`) should contain the following columns:
