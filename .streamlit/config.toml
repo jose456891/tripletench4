@@ -1,5 +1,5 @@
 [server]
-headless = true
+headless = false
 port = 10000
 
 [browser]
