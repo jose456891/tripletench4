@@ -25,6 +25,9 @@ This is a Streamlit web application for analyzing car prices using histograms an
 3. Run the Streamlit app:
     ```bash
     streamlit run app.py
+
+## Notes
+    tested with Python 3.10.0
     ```
 
 ## Usage
