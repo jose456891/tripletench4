@@ -91,11 +91,9 @@ Not selecting any filters:
 
 ## Future improvements / requests / help
 
-    -Selecting years should be done by slider
-
-    -Filters should update available selection dynamically
-
-    -add odometer as a filter
+-   Filters should update available selection dynamically
+- `date_posted`: Somehow itegrate this
+- `days_listed`: Somehow itegrate this
 
 ## Data
 
@@ -112,6 +110,7 @@ The dataset (`vehicles_us.csv`) should contain the following columns:
 - `is_4wd`: Whether the car is 4WD (True or False).
 - `date_posted`: The date the car was posted for sale.
 - `days_listed`: The number of days the car was listed for sale.
+- `odometer`: The miles on the odometer of the vehicle.
 
 ## Contributing
 
