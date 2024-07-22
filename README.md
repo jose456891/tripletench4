@@ -92,6 +92,7 @@ Not selecting any filters:
 ## Future improvements / requests / help
 
 -Selecting years should be done by slider
+
 -Filters should update available selection dynamically
 
 ## Data
