@@ -55,6 +55,14 @@ tripletench4/
 
     ├── EDA.ipynb # jupynter notebook for exploratory analysis and scratch pad
 
+├── screenshots/
+
+    ├── "Average car price dovetail.png" # This graph represents average vehicle prices by year in the platform. Loks like a dovetail. The plateau is around the 2000s cars. These years seems to have the lowest price on average.
+
+    ├── "Capitalizaiton by vehicle year.png" # This graph represents vehicle years and ther market capitailization in the platform. Looks like cars 2 years old 2016 (assuming 2018 is current data year) have the highest market capitalization.
+
+    ├── "Market Capitalization by Model" # This graph represents vehicle model market capitalization. Looks like the F150 is America's most popular model.
+
 ├── app.py # Main Streamlit app
 
 ├── functions.py # Helper functions for data preparation and plotting
