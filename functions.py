@@ -129,7 +129,7 @@ def plot_histogram_price_filtered(df, model_year=None, cylinders=None, condition
     return fig, len(df)
 
 def plot_scatterplot_price_year(df, model_year=None, cylinders=None, condition=None, fuel=None, transmission=None, 
-                                car_type=None, paint_color=None, is_4wd=None, models=None, aggregation='mean'):
+                                car_type=None, paint_color=None, is_4wd=None, models=None):
     """
     Plots a scatterplot of car prices over the years with optional filters.
 
@@ -144,7 +144,6 @@ def plot_scatterplot_price_year(df, model_year=None, cylinders=None, condition=N
     paint_color (list or str, optional): The paint color of the car to filter and plot. Defaults to None.
     is_4wd (list or bool, optional): Whether the car is 4WD to filter and plot. Defaults to None.
     models (list of str, optional): List of substrings to filter models. Defaults to None.
-    aggregation string of median or sum. Defaults to median.
     """
     # Apply filters
     filters_applied = {
@@ -208,22 +207,14 @@ def plot_scatterplot_price_year(df, model_year=None, cylinders=None, condition=N
         model_pattern = '|'.join(filters_applied['models'])
         df = df[df['model'].str.contains(model_pattern, case=False, na=False)]
     
-    # Set the aggregation function for price
-    if aggregation == 'mean':
-        df_grouped = df.groupby('model')['price'].mean().reset_index()
-        y_title = 'Mean Price'
-    else:
-        df_grouped = df.groupby('model')['price'].sum().reset_index()
-        y_title = 'Market Share'
-
     # Create the scatter plot
-    fig = px.scatter(df_grouped, x='model_year', y='price', color='model',
+    fig = px.scatter(df, x='model_year', y='price', color='model',
                      title="Scatterplot of Car Prices over Years",
                      labels={'model_year': 'Model Year', 'price': 'Price'},
                      color_discrete_sequence=px.colors.qualitative.Pastel)
-    fig.update_layout(xaxis_title='Model Year', yaxis_title=y_title, template='plotly_white')
+    fig.update_layout(xaxis_title='Model Year', yaxis_title='Price', template='plotly_white')
 
-    return fig, len(df_grouped)
+    return fig, len(df)
 
 def update_filter_options(df, selected_filters):
     if selected_filters['model_year']:
