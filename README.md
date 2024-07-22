@@ -39,10 +39,15 @@ This is a Streamlit web application for analyzing car prices using histograms an
 
 ## File Structure
 car-price-analysis-app/
+
 ├── app.py # Main Streamlit app
+
 ├── functions.py # Helper functions for data preparation and plotting
+
 ├── vehicles_us.csv # Dataset containing car information
+
 ├── requirements.txt # List of required Python packages
+
 └── README.md # This readme file
 
 
@@ -68,7 +73,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License. please feel free to contact me at jose456891@gmail.com
+This project is licensed under the MIT License. Please feel free to contact me at jose456891@gmail.com
 
 ## Acknowledgments
 
