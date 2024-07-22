@@ -33,7 +33,7 @@ def dataprep(df):
     return df
 
 def plot_histogram_price_filtered(df, model_year=None, cylinders=None, condition=None, fuel=None, transmission=None, 
-                                  car_type=None, paint_color=None, is_4wd=None, models=None, aggregation='Average Price'):
+                                  car_type=None, paint_color=None, is_4wd=None, models=None, aggregation='Average Vehicle Price'):
     """
     Plots a histogram of car prices by model with optional filters.
 
@@ -113,9 +113,9 @@ def plot_histogram_price_filtered(df, model_year=None, cylinders=None, condition
         df = df[df['model'].str.contains(model_pattern, case=False, na=False)]
     
     # Set the aggregation function for price
-    if aggregation == 'mean':
+    if aggregation == 'Average Vehicle Price':
         df_grouped = df.groupby('model')['price'].mean().reset_index()
-        y_title = 'Average Price'
+        y_title = 'Average Vehicle Price'
     else:
         df_grouped = df.groupby('model')['price'].sum().reset_index()
         y_title = 'Market Capitalization'
@@ -129,7 +129,7 @@ def plot_histogram_price_filtered(df, model_year=None, cylinders=None, condition
     return fig, len(df)
 
 def plot_scatterplot_price_year(df, model_year=None, cylinders=None, condition=None, fuel=None, transmission=None, 
-                                car_type=None, paint_color=None, is_4wd=None, models=None, aggregation="mean"):
+                                car_type=None, paint_color=None, is_4wd=None, models=None, aggregation="Average Vehicle Price"):
     """
     Plots a scatterplot of car prices over the years with optional filters.
 
@@ -209,9 +209,9 @@ def plot_scatterplot_price_year(df, model_year=None, cylinders=None, condition=N
         df = df[df['model'].str.contains(model_pattern, case=False, na=False)]
     
     # Set the aggregation function for price
-    if aggregation == "mean":
+    if aggregation == "Average Vehicle Price":
         df_grouped = df.groupby('model_year')['price'].mean().reset_index()
-        y_title = 'Average Price'
+        y_title = 'Average Vehicle Price'
     else:
         df_grouped = df.groupby('model_year')['price'].sum().reset_index()
         y_title = 'Market Capitalization'

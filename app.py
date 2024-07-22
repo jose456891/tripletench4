@@ -35,7 +35,7 @@ selected_filters = {
     'is_4wd': st.sidebar.multiselect("Is 4WD", [True, False]),
     'models': st.sidebar.multiselect("Models", get_unique_options(df, 'model'))
 }
-aggregation = st.sidebar.radio("Aggregation Method", ['mean', 'sum'])
+aggregation = st.sidebar.radio("Aggregation Method", ['Average Vehicle Price', 'Market Capitalization'])
 
 filtered_df = update_filter_options(df, selected_filters)
 
