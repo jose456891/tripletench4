@@ -17,7 +17,7 @@ st.title("Car Price Analysis with Filters")
 from streamlit_option_menu import option_menu
 
 with st.sidebar:
-    selected = option_menu("Menu", ["Histogram", "Scatterplot"], icons=['bar-chart', 'scatter-chart'], menu_icon="cast", default_index=0)
+    selected = option_menu("Select graph", ["Histogram", "Scatterplot"], icons=['bar-chart', 'scatter-chart'], menu_icon="cast", default_index=0)
 
 # Get unique filter options based on current selection
 def get_unique_options(df, column):
