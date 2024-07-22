@@ -37,10 +37,10 @@ selected_filters = {
 }
 aggregation = st.sidebar.radio("Aggregation Method", ['Average', 'Market Share'])
 
-filtered_df = update_filter_options(df, selected_filters)
 
 # Apply button
 if st.sidebar.button("Apply"):
+    filtered_df = update_filter_options(df, selected_filters)
     if selected == "Histogram":
         fig, count = plot_histogram_price_filtered(filtered_df, model_year=selected_filters['model_year'], 
                                                    cylinders=selected_filters['cylinders'], condition=selected_filters['condition'], 
