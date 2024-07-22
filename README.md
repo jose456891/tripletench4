@@ -38,7 +38,19 @@ This is a Streamlit web application for analyzing car prices using histograms an
    - Click the "Apply" button to display the scatterplot with the selected filters.
 
 ## File Structure
-car-price-analysis-app/
+tripletench4/
+
+├── .streamlit/
+
+    ├── config.toml # streamlit config
+
+├── .streamlit/
+
+    ├── config.toml # streamlit config
+
+├── notebooks/
+
+    ├── EDA.ipynb # jupynter notebook for exploratory analysis and scratch pad
 
 ├── app.py # Main Streamlit app
 
@@ -48,7 +60,10 @@ car-price-analysis-app/
 
 ├── requirements.txt # List of required Python packages
 
+├── LICENSE # GNU License
+
 └── README.md # This readme file
+
 
 
 ## Data
@@ -73,7 +88,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License. Please feel free to contact me at jose456891@gmail.com
+This project is licensed under the GNU License. Please see LICENSE file. Please feel free to contact me at jose456891@gmail.com
 
 ## Acknowledgments
 
