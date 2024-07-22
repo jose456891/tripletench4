@@ -11,23 +11,44 @@ def dataprep(df):
     Returns:
     pd.DataFrame: The cleaned and converted DataFrame.
     """
-    # Drop rows with missing data
-    # df = df.dropna()
+    # Drop rows with missing model_year
+    df = df.dropna(subset=['model_year'])
 
-    # conversions datatype
-    # Convert 'price' to float
+    # Fill missing cylinders values
+    # Calculate the mean value for each model
+    model_cylinders_mean = df.groupby('model')['cylinders'].mean()
+    df['cylinders'] = df.apply(
+        lambda row: model_cylinders_mean[row['model']] if pd.isna(row['cylinders']) else row['cylinders'], axis=1
+    )
+    # Fill any remaining NaN values with the overall mean cylinders value
+    overall_mean_cylinders = df['cylinders'].mean()
+    df['cylinders'] = df['cylinders'].fillna(overall_mean_cylinders)
+
+    # Fill missing odometer values
+    # Calculate the mean odometer value for each condition
+    condition_odometer = df.groupby('condition')['odometer'].mean()
+    df['odometer'] = df.apply(
+        lambda row: condition_odometer[row['condition']] if pd.isna(row['odometer']) else row['odometer'], axis=1
+    )
+
+    # Fill missing paint_color values
+    # Calculate the most common value for each model
+    model_paint_color = df.groupby('model')['paint_color'].agg(lambda x: x.mode().iloc[0] if not x.mode().empty else np.nan)
+    df['paint_color'] = df.apply(
+        lambda row: model_paint_color[row['model']] if pd.isna(row['paint_color']) else row['paint_color'], axis=1
+    )
+    # Fill any remaining NaN values with the overall most common paint color
+    most_common_paint_color = df['paint_color'].mode().iloc[0]
+    df['paint_color'] = df['paint_color'].fillna(most_common_paint_color)
+
+    # Fill missing is_4wd values with 0.0
+    df['is_4wd'] = df['is_4wd'].fillna(0.0)
+
+    # Convert data types
     df['price'] = df['price'].astype('float64')
-
-    # Convert 'model_year' to int
-    df['model_year'] = df['model_year'].astype('Int64')
-
-    # Convert 'cylinders' to int
-    df['cylinders'] = df['cylinders'].astype('Int64')
-
-    # Convert 'is_4wd' to boolean, skipping NaN values
+    df['model_year'] = df['model_year'].astype('int64')
+    df['cylinders'] = df['cylinders'].astype('int64')
     df['is_4wd'] = df['is_4wd'].map({1.0: True, 0.0: False})
-
-    # Convert 'date_posted' to datetime
     df['date_posted'] = pd.to_datetime(df['date_posted']).dt.floor('D')
 
     return df
