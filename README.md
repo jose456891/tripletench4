@@ -52,10 +52,6 @@ tripletench4/
 
     ├── config.toml # streamlit config
 
-├── .streamlit/
-
-    ├── config.toml # streamlit config
-
 ├── notebooks/
 
     ├── EDA.ipynb # jupynter notebook for exploratory analysis and scratch pad
